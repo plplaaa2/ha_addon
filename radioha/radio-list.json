@@ -1,8 +1,8 @@
 {
 	"ytn" : "https://radiolive.ytn.co.kr/radio/_definst_/20211118_fmlive/playlist.m3u8",
-	"tbsfm" : "https://cdnfm.tbs.seoul.kr/tbs/_definst_/tbs_fm_web_360.smil/chunklist_b414000.m3u8",	
-	"tbnfm" : "https://5cc6beb04faf6.streamlock.net/gyeongin/myStream/chunklist_w1294859978.m3u8",
-	"ifm" : "https://stream.ifm.kr/live/aod1/chunklist_0_audio_5097359403294618776_llhls.m3u8",
+	"tbsfm" : "https://cdnfm.tbs.seoul.kr/tbs/_definst_/tbs_fm_web_360.smil/playlist.m3u8",	
+	"tbnfm" : "https://5cc6beb04faf6.streamlock.net/gyeongin/myStream/playlist.m3u8",
+	"ifm" : "https://stream.ifm.kr/live/aod1/playlist.m3u8",
 	"ebsfm" : "https://ebsonair.ebs.co.kr/fmradiofamilypc/familypc1m/playlist.m3u8",
 	"cbs_music_fm" : "https://m-aac.cbs.co.kr/mweb_cbs939/_definst_/cbs939.stream/playlist.m3u8",
 	"cbs_fm" : "https://m-aac.cbs.co.kr/mweb_cbs981/_definst_/cbs981.stream/playlist.m3u8",
