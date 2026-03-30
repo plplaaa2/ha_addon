@@ -1,16 +1,27 @@
-FROM ubuntu:18.04
+FROM node:20-alpine
 
-RUN apt-get update -y
-RUN apt-get install curl -y
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-
-RUN apt-get install nodejs ffmpeg -y
+# Install ffmpeg and ca-certificates
+RUN apk add --no-cache ffmpeg ca-certificates
 
 WORKDIR /app
-COPY index.js /app/
-COPY package.json /app/
-COPY radio-list.json /app/
-COPY run.sh /app/
-RUN chmod a+x /app/run.sh
-RUN npm install
-ENTRYPOINT [ "/app/run.sh" ]
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy application files
+COPY index.js radio-list.json run.sh ./
+COPY public ./public
+RUN chmod +x run.sh
+
+# Expose port
+EXPOSE 3005
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3005', (r) => {if (r.statusCode !== 404) throw new Error(r.statusCode)})" || exit 1
+
+# Start application
+CMD ["node", "index.js"]
