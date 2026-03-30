@@ -1,13 +1,15 @@
 {
-  "name": "radioha",
-  "version": "2.1.0",
-  "description": "Korea Internet Radio Streaming for Home Assistant - 19 Channels",
+  "name": "korea-radio-ha-addon",
+  "version": "1.0.6",
+  "description": "",
   "main": "index.js",
-  "scripts": {"start": "node index.js", "dev": "NODE_ENV=development node index.js"},
-  "engines": {"node": ">=18.0.0", "npm": ">=9.0.0"},
-  "dependencies": {"axios": "^1.7.0", "ip": "^2.0.1"},
-  "devDependencies": {},
-  "author": "projectdhs",
-  "license": "ISC",
-  "keywords": ["home-assistant", "addon", "korea-radio", "streaming", "kbs", "mbc", "sbs", "webui"]
+  "scripts": {
+    "start": "node ."
+  },
+  "dependencies": {
+    "axios": "^0.25.0",
+    "ip": "^1.1.5"
+  },
+  "author": "",
+  "license": "ISC"
 }
