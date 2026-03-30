@@ -1,0 +1,160 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+}
+
+.player {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+}
+
+.radio-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.radio-btn {
+    padding: 15px;
+    background: #f0f0f0;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.radio-btn:hover {
+    background: #e8e8e8;
+    border-color: #667eea;
+}
+
+.radio-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.station {
+    display: block;
+}
+
+.player-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.control-btn {
+    flex: 1;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-btn.play {
+    background: #667eea;
+    color: white;
+}
+
+.control-btn.play:hover {
+    background: #5568d3;
+}
+
+.control-btn.stop {
+    background: #ff6b6b;
+    color: white;
+}
+
+.control-btn.stop:hover {
+    background: #ee5a52;
+}
+
+.now-playing {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.now-playing p {
+    margin: 5px 0;
+    color: #333;
+}
+
+.now-playing span {
+    font-weight: 600;
+    color: #667eea;
+}
+
+.bitrate-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.bitrate-selector label {
+    font-weight: 600;
+}
+
+.bitrate-selector select {
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+}
+
+#radioPlayer {
+    width: 100%;
+    margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+    .player {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    .radio-list {
+        grid-template-columns: 1fr;
+    }
+}
