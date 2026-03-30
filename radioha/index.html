@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Korea Radio Player</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background-color: #1a1a1a; 
+            color: #fff; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+        .header { 
+            margin-top: 30px; 
+            margin-bottom: 20px; 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #00aaff; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .container { 
+            width: 90%; 
+            max-width: 600px; 
+            background: #262626; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
+            margin-bottom: 120px;
+        }
+        .quality-section { margin-bottom: 20px; }
+        .label { font-size: 12px; color: #888; margin-bottom: 8px; }
+        select { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            background: #1a1a1a; 
+            color: #fff; 
+            appearance: none; 
+            cursor: pointer; 
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 10px; 
+            margin-bottom: 30px; 
+        }
+        .radio-btn { 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            background: #333; 
+            color: #fff; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .radio-btn:hover { background: #444; }
+        .radio-btn.active { background: #ff9900; color: #000; border-color: #ff9900; }
+        
+        .player-section { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: #262626; 
+            border-top: 1px solid #333; 
+            padding: 15px 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        .info { width: 90%; max-width: 600px; margin-bottom: 10px; font-size: 14px; color: #ccc; }
+        .player-container { 
+            width: 90%; 
+            max-width: 600px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            background: #fff; 
+            border-radius: 25px; 
+            padding: 5px 20px; 
+            color: #000; 
+        }
+        audio { width: 100%; height: 40px; }
+    </style>
+</head>
+<body>
+    <div class="header">📻 Korea Radio Player</div>
+    
+    <div class="container">
+        <div class="quality-section">
+            <div class="label">스트리밍 음질 선택</div>
+            <select id="quality">
+                <option value="0">256k (최고음질)</option>
+                <option value="1">192k (고음질)</option>
+                <option value="2" selected>128k (절약)</option>
+                <option value="3">96k (낮음)</option>
+                <option value="4">48k (최소)</option>
+            </select>
+        </div>
+        <div class="grid">
+            {{RADIO_BUTTONS}}
+        </div>
+    </div>
+
+    <div class="player-section">
+        <div class="info" id="status">재생 대기 중...</div>
+        <div class="player-container">
+            <audio id="player" controls></audio>
+        </div>
+    </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const status = document.getElementById('status');
+        const quality = document.getElementById('quality');
+        let currentKey = "";
+
+        player.volume = 0.5;
+
+        function playRadio(key) {
+            currentKey = key;
+            const atype = quality.value;
+            const qualityText = quality.options[quality.selectedIndex].text;
+            const streamUrl = "radio?token={{MY_TOKEN}}&keys=" + key + "&atype=" + atype;
+            
+            document.querySelectorAll('.radio-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.toLowerCase() === key.toLowerCase());
+            });
+
+            player.src = streamUrl;
+            player.play();
+            status.innerHTML = "재생 중: " + key.toUpperCase() + " [" + qualityText + "]";
+        }
+
+        quality.addEventListener('change', () => {
+            if (currentKey) playRadio(currentKey);
+        });
+
+        // 오류 발생 시 자동 재시도
+        player.onerror = () => {
+            if (currentKey) {
+                status.innerHTML = "연결 오류: 다시 연결하는 중... (3초 후)";
+                setTimeout(() => playRadio(currentKey), 3000);
+            }
+        };
+
+        // 스트림이 끊겼을 때 자동 재시도
+        player.onended = () => {
+            if (currentKey) {
+                status.innerHTML = "스트림 종료: 다시 연결하는 중... (2초 후)";
+                setTimeout(() => playRadio(currentKey), 2000);
+            }
+        };
+    </script>
+</body>
+</html>
