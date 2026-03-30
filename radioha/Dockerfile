@@ -1,25 +1,19 @@
-FROM node:20-alpine
+FROM node:alpine
 
-# Install ffmpeg and ca-certificates
-RUN apk add --no-cache ffmpeg ca-certificates
+# 필요한 패키지 설치 (ffmpeg)
+RUN apk add --no-cache ffmpeg
 
 WORKDIR /app
 
-# Copy package files (package-lock.json will be copied if present)
-COPY package*.json ./
+# 애플리케이션 파일 복사
+COPY index.js .
+COPY index.html .
+COPY package.json .
+COPY radio-list.json .
+COPY run.sh .
 
-# Install dependencies: use npm ci when lockfile present, otherwise npm install
-RUN if [ -f package-lock.json ]; then npm ci --only=production; else npm install --only=production; fi \
-    && npm cache clean --force
+# 실행 권한 부여 및 의존성 설치
+RUN chmod a+x run.sh
+RUN npm install
 
-# Copy application files
-COPY index.js radio-list.json run.sh ./
-COPY public ./public
-RUN chmod +x run.sh
-
-EXPOSE 3005
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3005', (r) => { if (r.statusCode !== 404) throw new Error(r.statusCode) })" || exit 1
-
-CMD ["node", "index.js"]
+ENTRYPOINT [ "./run.sh" ]
