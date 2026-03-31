@@ -3,7 +3,7 @@
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Add--on-blue.svg)](https://www.home-assistant.io/)
 
-Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로 청취할 수 있는 공식 애드온입니다. 별도의 외부 플레이어 없이 HA 대시보드와 앱 내에서 간편하게 라디오를 즐기세요.
+Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로 청취할 수 있는 애드온입니다. 별도의 외부 플레이어 없이 HA 대시보드와 앱 내에서 간편하게 라디오를 즐기세요.
 
 ---
 
