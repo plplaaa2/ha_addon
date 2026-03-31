@@ -1,6 +1,6 @@
 {
   "ytn": "https://radiolive.ytn.co.kr/radio/_definst_/20211118_fmlive/playlist.m3u8",
-  "tbsfm": "http://58.234.158.60:1935/fmlive/myStream/playlist.m3u8",
+  "tbsfm": "http://cdnfm.tbs.seoul.kr/tbs/_definst_/tbs_fm_web.smil/playlist.m3u8",
   "tbnfm": "https://5cc6beb04faf6.streamlock.net/gyeongin/myStream/playlist.m3u8",
   "ifm": "https://stream.ifm.kr/live/aod1/playlist.m3u8",
   "ebsfm": "https://ebsonair.ebs.co.kr/fmradiofamilypc/familypc1m/playlist.m3u8",
