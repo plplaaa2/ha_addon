@@ -31,9 +31,10 @@ Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로
 
 ## 🚀 설치 및 설정 방법
 
-## 자동 설치
+## 자동 설치(권장)
 
 [![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fplplaaa2%2Fkorea_radio_addon)
+버튼을 클릭하면 저장소 추가로 연결 됩니다.
 
 ## 수동설치
 
