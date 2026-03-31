@@ -49,7 +49,7 @@ Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로
 
 ## 📜 라이선스
 
-본 프로젝트는 **ISC License**를 따릅니다. 자세한 내용은 [LICENSE](./LICENSE) 파일을 확인하세요.
+본 프로젝트는 **ISC License**를 따릅니다. 자세한 내용은 [LICENSE](./licence) 파일을 확인하세요.
 
 ---
 
