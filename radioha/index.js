@@ -84,7 +84,7 @@ function return_pipe(urls, resp, req, key) {
     ];
 
     if (atype === 0) {
-        ffmpegArgs.push("-c:a", "copy", "-bufsize", "384k");
+        ffmpegArgs.push("-c:a", "copy");
         console.log(`[Auto Copy] ${key}`);
     } else {
         const bitrate = atype_list[atype - 1] || 128;
