@@ -132,7 +132,7 @@ function return_pipe(urls, resp, req, key) {
     
     ffmpegArgs.push("-f", "adts", "pipe:1");    
 
-    resp.writeHead(200, { 'Content-Type': 'audio/aac', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive' });
+    resp.writeHead(200, { 'Content-Type': 'audio/aac', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' });
 
     const xffmpeg = child_process.spawn("ffmpeg", ffmpegArgs, { detached: false });
     xffmpeg.stdout.pipe(resp);
