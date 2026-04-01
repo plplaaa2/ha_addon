@@ -118,12 +118,10 @@ function return_pipe(urls, resp, req, key) {
     } else {
         const bitrate = atype_list[atype - 1] || 128;
         ffmpegArgs.push("-c:a", "aac", "-b:a", bitrate + "k", "-bufsize", (bitrate * 2) + "k");
-        ffmpegArgs.push("-f", "adts");
         console.log(`[Transcode] ${key} (${bitrate}k)`);
     }
     
-    // ffmpegArgs.push("-f", "adts", "pipe:1");
-    ffmpegArgs.push("pipe:1");
+    ffmpegArgs.push("-f", "adts", "pipe:1");    
 
     resp.writeHead(200, { 'Content-Type': 'audio/aac', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive' });
 
