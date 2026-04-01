@@ -113,9 +113,9 @@ function return_pipe(urls, resp, req, key) {
     let ffmpegArgs = [
         "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1",
         "-reconnect_delay_max", "5", "-reconnect_on_network_error", "1",
-        "-reconnect_on_http_error", "4xx,5xx", "-fflags", "nobuffer+genpts",
-        "-flags", "low_delay", "-probesize", "16384", "-analyzeduration", "500000",
-        "-headers", `User-Agent: ${FULL_UA}`, // FFmpeg 내부 헤더에도 적용
+        "-reconnect_on_http_error", "4xx,5xx", "-fflags", "nobuffer+genpts+flush_packets",
+        "-flags", "low_delay", "-probesize", "32768", "-analyzeduration", "500000",
+        "-headers", `User-Agent: ${FULL_UA}`,
         "-loglevel", "error", "-i", urls, "-vn"
     ];
 
