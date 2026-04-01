@@ -107,13 +107,16 @@ function return_pipe(urls, resp, req, key) {
  * 3. HTTP 서버 설정
  */
 const liveServer = http.createServer((req, resp) => {
-    const urlParts = url.parse(req.url, true);
-    const urlParams = urlParts.query;
-    const urlPath = urlParts.pathname;
+    // 최신 WHATWG URL API 방식 적용 (DeprecationWarning 해결)
+    const baseURL = `http://${req.headers.host || 'localhost'}`;
+    const myUrl = new URL(req.url, baseURL);
+    const urlParams = myUrl.searchParams;
+    const urlPath = myUrl.pathname;
 
     if (urlPath === "/radio") {
-        if (urlParams['token'] === mytoken) {
-            const key = urlParams['keys'];
+        // urlParams.get('key_name') 방식으로 값을 가져옵니다.
+        if (urlParams.get('token') === mytoken) {
+            const key = urlParams.get('keys');
             const currentData = getRadioData();
             const myData = currentData[key];
 
@@ -135,6 +138,7 @@ const liveServer = http.createServer((req, resp) => {
             resp.end("Forbidden");
         }
     } else if (urlPath === "/") {
+        // 메인 페이지 처리 (이 부분도 동일하게 수정 가능)
         resp.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         const currentData = getRadioData();
         const radioButtons = Object.keys(currentData).map(key =>
