@@ -100,6 +100,15 @@ function return_pipe(urls, resp, req, key) {
     const myUrl = new URL(req.url, baseURL);
     const urlParams = myUrl.searchParams;
     let atype = parseInt(urlParams.get("atype")) || 0;
+     /**
+     * [추가] 특정 채널 예외 처리
+     * WBS, TBS 등 copy 모드 재생 불가 채널은 강제로 트랜스코딩(128k) 적용
+     */    
+    const forceTranscodeList = ['wbs', 'tbs']; // radio-list.json에 등록된 키값을 넣으세요
+    if (forceTranscodeList.includes(key) && atype === 0) {
+        atype = 2; // 0(Auto) 대신 2(128k)로 강제 변경
+        console.log(`[Force Transcode] ${key} - 원본 재생 불가 채널이므로 128k로 전환합니다.`);
+    }
 
     let ffmpegArgs = [
         "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1",
