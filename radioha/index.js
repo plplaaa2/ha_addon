@@ -126,7 +126,7 @@ function return_pipe(urls, resp, req, key) {
         console.log(`[Pure Pass-through Test] ${key}`);
     } else {
         const bitrate = atype_list[atype - 1] || 128;
-        ffmpegArgs.push("-c:a", "aac", "-b:a", bitrate + "k", "-ac", "2", "-bufsize", (bitrate * 2) + "k");
+        ffmpegArgs.push("-c:a", "aac", "-b:a", bitrate + "k", "-ac", "2", "-bufsize", (bitrate * 2) + "k", "-af", "aresample=async=1" );
         console.log(`[Transcode] ${key} (${bitrate}k)`);
     }
     
