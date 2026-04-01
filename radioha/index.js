@@ -70,8 +70,9 @@ function getsbs(ch) {
  * 2. FFmpeg 스트리밍 함수
  */
 function return_pipe(urls, resp, req, key) {
-    const urlParts = url.parse(req.url, true);
-    const urlParams = urlParts.query;
+    const baseURL = `http://${req.headers.host || 'localhost'}`;
+    const myUrl = new URL(req.url, baseURL);
+    const urlParams = myUrl.searchParams;
     let atype = parseInt(urlParams["atype"]) || 0;
 
     let ffmpegArgs = [
