@@ -111,15 +111,19 @@ function return_pipe(urls, resp, req, key) {
     ];
 
     if (atype === 0) {
-        ffmpegArgs.push("-c:a", "copy", "-bufsize", "384k");
-        console.log(`[Auto Copy] ${key}`);
+        // [수정 포인트 1] -c:a copy는 유지하되, 
+        // 만약 원본이 ADTS가 아니라면 브라우저가 못 읽을 확률이 99%입니다.
+        ffmpegArgs.push("-c:a", "copy"); 
+        console.log(`[Pure Pass-through Test] ${key}`);
     } else {
         const bitrate = atype_list[atype - 1] || 128;
         ffmpegArgs.push("-c:a", "aac", "-b:a", bitrate + "k", "-bufsize", (bitrate * 2) + "k");
+        ffmpegArgs.push("-f", "adts");
         console.log(`[Transcode] ${key} (${bitrate}k)`);
     }
-
-    ffmpegArgs.push("-f", "adts", "pipe:1");
+    
+    // ffmpegArgs.push("-f", "adts", "pipe:1");
+    ffmpegArgs.push("pipe:1");
 
     resp.writeHead(200, { 'Content-Type': 'audio/aac', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive' });
 
