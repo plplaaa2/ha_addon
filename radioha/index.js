@@ -1,5 +1,5 @@
 const port = 3005; // 포트 설정
-const atype_list = [256, 192, 128, 96, 48];
+const atype_list = [192, 128, 96];
 const mytoken = 'homeassistant' // 토큰 설정
 const http = require('http');
 const url = require("url");
@@ -21,20 +21,17 @@ const instance = axios.create({
     timeout: 3000,
 });
 
-function return_pipe(urls, resp, req) {
+function return_pipe(urls, resp, req, key) { 
     const urlParts = url.parse(req.url, true);
     const urlParams = urlParts.query;
+    
+    // atype: 0(Auto/Copy), 1(192k), 2(128k), 3(96k) 순서라고 가정
     let atype = urlParams["atype"];
     if (atype == undefined) atype = 0;
     else atype = Number(atype);
 
-    resp.writeHead(200, {
-        'Content-Type': 'audio/aac',
-        'Transfer-Encoding': 'chunked',
-        'Connection': 'keep-alive'
-    });
-
-    var xffmpeg = child_process.spawn("ffmpeg", [
+    // FFmpeg 공통 인자 설정
+    let ffmpegArgs = [
         "-reconnect", "1",
         "-reconnect_at_eof", "1",
         "-reconnect_streamed", "1",
@@ -47,12 +44,38 @@ function return_pipe(urls, resp, req) {
         "-analyzeduration", "100000",
         "-headers", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.162 Safari/537.36",
         "-loglevel", "error",
-        "-i", urls,
-        "-c:a", "aac",
-        "-b:a", atype_list[atype] + "k",
-        "-bufsize", "128K",
-        "-f", "adts", "pipe:1" // output to stdout
-    ], {
+        "-i", urls
+    ];
+
+    // 로직 변경: atype이 0이면 무조건 Copy, 아니면 선택한 인덱스로 트랜스코딩
+    if (atype === 0) {
+        // 원본 그대로 전송 (Auto 모드)
+        ffmpegArgs.push("-c:a", "copy");
+        console.log(`[Auto Copy] ${key} - Original Stream`);
+    } else {
+        // 사용자가 선택한 비트레이트로 변환 (트랜스코딩 모드)
+        // atype_list[0]이 192k이므로, atype=1일 때 index 0을 참조하도록 설정
+        const targetIdx = atype - 1;
+        const bitrate = atype_list[targetIdx] || 128; // 유효하지 않은 값이면 기본 128k
+
+        ffmpegArgs.push(
+            "-c:a", "aac",
+            "-b:a", bitrate + "k",
+            "-bufsize", (bitrate * 2) + "k"
+        );
+        console.log(`[Transcode] ${key} - Selected Quality: ${bitrate}k`);
+    }
+
+    // 출력 포맷 설정 (AAC ADTS)
+    ffmpegArgs.push("-f", "adts", "pipe:1");
+
+    resp.writeHead(200, {
+        'Content-Type': 'audio/aac',
+        'Transfer-Encoding': 'chunked',
+        'Connection': 'keep-alive'
+    });
+
+    var xffmpeg = child_process.spawn("ffmpeg", ffmpegArgs, {
         detached: false
     });
 
@@ -63,8 +86,6 @@ function return_pipe(urls, resp, req) {
 
     xffmpeg.on("error", function (e) {
         console.log("Xsystem error: " + e);
-    });
-    xffmpeg.stdout.on("data", function (data) {
     });
 
     req.on("close", function () {
