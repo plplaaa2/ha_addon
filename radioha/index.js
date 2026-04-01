@@ -116,7 +116,7 @@ function return_pipe(urls, resp, req, key) {
         "-reconnect_on_http_error", "4xx,5xx", "-fflags", "nobuffer+genpts",
         "-flags", "low_delay", "-probesize", "16384", "-analyzeduration", "500000",
         "-headers", `User-Agent: ${FULL_UA}`, // FFmpeg 내부 헤더에도 적용
-        "-loglevel", "error", "-i", urls
+        "-loglevel", "error", "-i", urls, "-vn"
     ];
 
     if (atype === 0) {
