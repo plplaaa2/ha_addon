@@ -3,7 +3,6 @@ const atype_list = [192, 128, 96];
 const mytoken = 'homeassistant';
 
 const http = require('http');
-const url = require("url");
 const child_process = require("child_process");
 const fs = require('fs');
 const axios = require('axios');
@@ -11,9 +10,9 @@ const path = require('path');
 
 const instance = axios.create({ timeout: 3000 });
 
-/**
- * 1. 데이터 및 유틸리티 함수들
- */
+// 공통으로 사용할 풀 버전 User-Agent
+const FULL_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
+
 function getRadioData() {
     try {
         return JSON.parse(fs.readFileSync(path.join(__dirname, 'radio-list.json'), 'utf8'));
@@ -28,7 +27,10 @@ function getkbs(param) {
     return new Promise((resolve) => {
         let kbs_ch = { 'kbs_1radio': '21', 'kbs_3radio': '23', 'kbs_classic': '24', 'kbs_cool': '25', 'kbs_happy': '22' };
         instance.get('https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/' + kbs_ch[param], {
-            headers: { 'User-Agent': 'Mozilla/5.0...', 'referer': 'https://onair.kbs.co.kr/' }
+            headers: { 
+                'User-Agent': FULL_UA, 
+                'referer': 'https://onair.kbs.co.kr/' 
+            }
         }).then(response => {
             const kbs_src = response.data.channel_item;
             let media_src = "invalid";
@@ -48,10 +50,18 @@ function getmbc(ch) {
     return new Promise((resolve) => {
         let mbc_ch = { 'mbc_fm4u': 'mfm', 'mbc_fm': 'sfm' };
         instance.get('https://sminiplay.imbc.com/aacplay.ashx?agent=webapp&channel=' + mbc_ch[ch], {
-            headers: { 'User-Agent': 'Mozilla/5.0...', 'Referer': 'http://mini.imbc.com/' }
+            headers: { 
+                'User-Agent': FULL_UA, 
+                'Referer': 'https://mini.imbc.com/' 
+            }
         }).then(response => {
-            let text = 'https://' + response.data.split('"https://')[1].split('"')[0];
-            resolve(text);
+            // MBC 특유의 split 파싱 로직 유지
+            if (response.data && response.data.includes('https://')) {
+                let text = 'https://' + response.data.split('"https://')[1].split('"')[0];
+                resolve(text.replace(/[) ;]/g, '')); // 불필요한 문자 제거
+            } else {
+                resolve("invalid");
+            }
         }).catch(() => resolve("invalid"));
     });
 }
@@ -61,7 +71,10 @@ function getsbs(ch) {
     return new Promise((resolve) => {
         let sbs_ch = { 'sbs_power': ['powerfm', 'powerpc'], 'sbs_love': ['lovefm', 'lovepc'] };
         instance.get(`https://apis.sbs.co.kr/play-api/1.0/livestream/${sbs_ch[ch][1]}/${sbs_ch[ch][0]}?protocol=hls&ssl=Y`, {
-            headers: { 'User-Agent': 'Mozilla/5.0...', 'Referer': 'https://gorealraplayer.radio.sbs.co.kr/' }
+            headers: { 
+                'User-Agent': FULL_UA, 
+                'Referer': 'https://gorealraplayer.radio.sbs.co.kr/' 
+            }
         }).then(response => resolve(response.data)).catch(() => resolve("invalid"));
     });
 }
@@ -73,18 +86,19 @@ function return_pipe(urls, resp, req, key) {
     const baseURL = `http://${req.headers.host || 'localhost'}`;
     const myUrl = new URL(req.url, baseURL);
     const urlParams = myUrl.searchParams;
-    let atype = parseInt(urlParams["atype"]) || 0;
+    let atype = parseInt(urlParams.get("atype")) || 0;
 
     let ffmpegArgs = [
         "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1",
         "-reconnect_delay_max", "5", "-reconnect_on_network_error", "1",
         "-reconnect_on_http_error", "4xx,5xx", "-fflags", "nobuffer+genpts",
         "-flags", "low_delay", "-probesize", "32768", "-analyzeduration", "1000000",
-        "-headers", "User-Agent: Mozilla/5.0...", "-loglevel", "error", "-i", urls
+        "-headers", `User-Agent: ${FULL_UA}`, // FFmpeg 내부 헤더에도 적용
+        "-loglevel", "error", "-i", urls
     ];
 
     if (atype === 0) {
-        ffmpegArgs.push("-c:a", "copy");
+        ffmpegArgs.push("-c:a", "copy", "-bufsize", "384k");
         console.log(`[Auto Copy] ${key}`);
     } else {
         const bitrate = atype_list[atype - 1] || 128;
@@ -108,14 +122,12 @@ function return_pipe(urls, resp, req, key) {
  * 3. HTTP 서버 설정
  */
 const liveServer = http.createServer((req, resp) => {
-    // 최신 WHATWG URL API 방식 적용 (DeprecationWarning 해결)
     const baseURL = `http://${req.headers.host || 'localhost'}`;
     const myUrl = new URL(req.url, baseURL);
     const urlParams = myUrl.searchParams;
     const urlPath = myUrl.pathname;
 
     if (urlPath === "/radio") {
-        // urlParams.get('key_name') 방식으로 값을 가져옵니다.
         if (urlParams.get('token') === mytoken) {
             const key = urlParams.get('keys');
             const currentData = getRadioData();
@@ -139,7 +151,6 @@ const liveServer = http.createServer((req, resp) => {
             resp.end("Forbidden");
         }
     } else if (urlPath === "/") {
-        // 메인 페이지 처리 (이 부분도 동일하게 수정 가능)
         resp.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         const currentData = getRadioData();
         const radioButtons = Object.keys(currentData).map(key =>
