@@ -47,23 +47,36 @@ function getkbs(param) {
 
 // MBC 주소 파싱
 function getmbc(ch) {
-    return new Promise((resolve) => {
-        let mbc_ch = { 'mbc_fm4u': 'mfm', 'mbc_fm': 'sfm' };
-        instance.get('https://sminiplay.imbc.com/aacplay.ashx?agent=webapp&channel=' + mbc_ch[ch], {
-            headers: { 
-                'User-Agent': FULL_UA, 
-                'Referer': 'https://mini.imbc.com/' 
-            }
-        }).then(response => {
-            // MBC 특유의 split 파싱 로직 유지
-            if (response.data && response.data.includes('https://')) {
-                let text = 'https://' + response.data.split('"https://')[1].split('"')[0];
-                resolve(text.replace(/[) ;]/g, '')); // 불필요한 문자 제거
-            } else {
-                resolve("invalid");
-            }
-        }).catch(() => resolve("invalid"));
-    });
+    return new Promise(function (resolve, reject) {
+        try {
+            let mbc_ch = {
+                'mbc_fm4u': 'mfm',
+                'mbc_fm': 'sfm',
+            };
+
+            instance({
+                method: 'get',
+                url: 'https://sminiplay.imbc.com/aacplay.ashx?agent=webapp&channel=' + mbc_ch[ch] + '&callback=jarvis.miniInfo.loadOnAirComplete',
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36',
+                    'Referer': 'https://mini.imbc.com/',
+                    'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+                    'Accept-Encoding': 'gzip, deflate'
+                }
+            })
+
+                .then(response => {
+                    var text = 'https://' + response.data.split('"https://')[1].split('"')[0];
+                    resolve(text);
+
+                }).catch(e => {
+                    console.log(e)
+                    resolve("invalid");
+                })
+        } catch {
+            resolve("invalid");
+        }
+    })
 }
 
 // SBS 주소 파싱
