@@ -9,57 +9,66 @@ Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로
 
 ## ✨ 주요 특징
 
-* 📻 **다양한 방송 채널 지원**: KBS(1/2/Kong), MBC, SBS(Power/Love) 등 지상파 주요 채널 및 인기 인터넷 라디오 채널 지원.
-* ⚡ **빠른 스트리밍**: `FFmpeg` 기반 실시간 트랜스 코딩을 통해 저지연 스트리밍 환경을 제공합니다.
-* 🔄 **자동 재연결(Auto-Retry)**: 네트워크 불안정으로 인한 스트림 중단 시, 클라이언트와 서버 양측에서 자동으로 연결을 복구합니다.
-* 📱 **반응형 심플 UI**: 모바일과 데스크탑 환경 모두에 최적화된 직관적인 인터페이스를 제공합니다.
-* 🏠 **HA 완벽 통합**: `Ingress` 및 사이드바 메뉴 지원을 통해 Home Assistant 앱 내에서 독립적인 앱처럼 편리하게 접근 가능합니다.
+* 📻 **다양한 방송 채널 지원**: KBS(1/2/Kong), MBC, SBS(Power/Love) 등 지상파 및 교통/종교방송 지원.
+* ⚡ **초고속 스트리밍**: `FFmpeg` 기반 최적화 설정을 통해 1~2초 내외의 저지연 재생 환경을 제공합니다.
+* 🔄 **스마트 재연결**: 네트워크 불안정 시 서버와 클라이언트가 유기적으로 접속을 복구합니다.
+* 🏠 **HA 완벽 통합**: `Ingress` 지원을 통해 사이드바 메뉴에서 독립 앱처럼 편리하게 사용 가능합니다.
 
 ---
 
-## 🛠 기술 스택
+## 🔌 API 사용법 (External Player)
 
-본 프로젝트는 경량화와 안정성을 위해 다음과 같은 기술을 사용합니다.
+본 애드온은 외부 플레이어(VLC, 미디어 자동화 등)에서 직접 호출할 수 있는 API를 제공합니다.
 
-| 분류 | 기술 | 비고 |
-| :--- | :--- | :--- |
-| **Runtime** | `Node.js` | Alpine Linux 기반의 초경량 이미지 사용 |
-| **Streaming** | `FFmpeg` | 실시간 오디오 처리 및 스트리밍 최적화 |
-| **Frontend** | `Vanilla JS` / `HTML5 Audio` | 외부 프레임워크 없는 순수 웹 API 기반의 가벼운 UI |
+### 엔드포인트 구조
+`GET http://<HA_IP>:3005/radio?keys=<CHANNEL_KEY>&token=<MY_TOKEN>&atype=<TYPE>`
+
+### 사용 가능한 파라미터
+- **keys** (필수): 재생할 채널의 고유 키값 (예: kbs_cool, sbs_power, tbs 등)
+- **token** (필수): 애드온 설정에서 지정한 보안 토큰 (기본값: homeassistant)
+- **atype** (선택): 스트리밍 모드 및 음질 선택 (기본값: 0)
+
+### atype (Audio Type) 상세 가이드
+- **0 (Auto Copy)**: 원본 스트림을 재인코딩 없이 전달합니다. CPU 부하가 거의 없으나 TBS 등 영상 기반 소스는 재생이 제한될 수 있습니다.
+- **1 (High)**: 192kbps AAC 트랜스코딩. 고음질과 표준 규격을 제공합니다.
+- **2 (Normal)**: 128kbps AAC 트랜스코딩. **가장 권장되는 모드**로 모든 채널을 표준 규격으로 송출하여 초기 반응 속도를 높입니다.
+- **3 (Low)**: 96kbps AAC 트랜스코딩. 네트워크 환경이 열악할 때 유용합니다.
+
+---
+
+## 🛠 하드웨어별 최적화 팁
+
+본 애드온은 **N100(미니 PC)**부터 **라즈베리 파이 3**까지 폭넓게 동작합니다.
+
+* **N100 / 고사양 사용자**: 모든 채널에서 트랜스코딩(atype=1, 2)을 사용해도 CPU 점유율이 매우 낮습니다. 안정적인 재생을 위해 트랜스코딩 모드 활용을 추천합니다.
+* **라즈베리 파이 3/4 사용자**: CPU 자원 절약을 위해 기본적으로 atype=0을 사용하세요. 단, TBS와 같이 영상 기반 소스인 채널은 반드시 atype=2를 사용하여 오디오만 추출해야 합니다.
 
 ---
 
 ## 🚀 설치 및 설정 방법
 
-## 자동 설치(권장)
-
-버튼을 클릭하면 저장소 추가로 연결 됩니다.
+### 자동 설치 (권장)
+아래 버튼을 클릭하여 저장소를 즉시 추가할 수 있습니다.
 
 [![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fplplaaa2%2Fkorea_radio_addon)
 
-
-## 수동설치
-
-### 1. 저장소 추가
-1. Home Assistant에서 **설정** > **기기 및 서비스** > **애드온**으로 이동합니다.
-2. 우측 하단의 **애드온 스토어** 버튼을 클릭합니다.
-3. 우측 상단 메뉴(⋮)에서 **저장소(Repositories)**를 선택합니다.
-4. 본 저장소의 URL을 입력하고 **추가**를 누릅니다.
-
-### 2. 애드온 설치 및 실행
-1. 목록에서 **Korea Radio** 애드온을 찾아 클릭합니다.
-2. **설치(INSTALL)** 버튼을 누릅니다.
-3. 설치 완료 후 **시작(START)** 버튼을 클릭합니다.
-
-### 3. 사이드바 설정
-* 애드온 설정 화면에서 **'사이드바에 표시(Show in sidebar)'** 옵션을 활성화하면 왼쪽 메뉴에서 바로 접근할 수 있어 편리합니다.
+### 수동 설치
+1. **설정 > 애드온 > 애드온 스토어**로 이동합니다.
+2. 우측 상단 메뉴(⋮) > **저장소(Repositories)**를 선택합니다.
+3. `https://github.com/plplaaa2/korea_radio_addon`을 입력하고 추가합니다.
+4. 목록에서 **Korea Radio**를 찾아 **설치(INSTALL)** 후 **시작(START)** 하세요.
 
 ---
 
-## 📜 라이선스
+## 🛠 기술 스택
 
-본 프로젝트는 **ISC License**를 따릅니다. 자세한 내용은 [LICENSE](./licence) 파일을 확인하세요.
+- **Runtime**: Node.js (Alpine Linux 기반)
+- **Streaming**: FFmpeg (실시간 ADTS 패키징 및 저지연 설정)
+- **Frontend**: Vanilla JS (외부 프레임워크 없는 순수 웹 API)
 
 ---
 
-> **Note**: 본 애드온은 각 방송사에서 제공하는 공개 스트리밍 주소를 활용하며, 모든 방송 콘텐츠에 대한 저작권은 각 방송사에 있습니다.
+## 📜 라이선스 및 유의사항
+
+* 본 프로젝트는 **ISC License**를 따릅니다.
+* **저작권 고지**: 본 애드온은 각 방송사에서 제공하는 공개 스트리밍 주소를 활용하며, 모든 콘텐츠의 저작권은 해당 방송사에 있습니다. 상업적 목적으로의 사용을 금합니다.
