@@ -21,7 +21,10 @@ Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로
 본 애드온은 외부 플레이어(VLC, 미디어 자동화 등)에서 직접 호출할 수 있는 API를 제공합니다.
 
 ### 엔드포인트 구조
-`GET http://<HA_IP>:3005/radio?keys=<CHANNEL_KEY>&token=<MY_TOKEN>&atype=<TYPE>`
+`http://<HA_IP>:3005/radio?keys=<CHANNEL_KEY>&token=<MY_TOKEN>&atype=<TYPE>`
+
+예제
+`http://<HA_IP>:3005/radio?keys=ytn&token=homeassistant&atype=0`
 
 ### 사용 가능한 파라미터
 - **keys** (필수): 재생할 채널의 고유 키값 (예: kbs_cool, sbs_power, tbs 등)
