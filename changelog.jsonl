@@ -1,0 +1,2 @@
+{"version": "1.0.0", "date": "2026-04-20", "description": "초기 릴리즈"}
+{"version": "1.1.0", "date": "2026-04-21", "description": "초고속 WAV/MP3 재생 엔진 도입, 음질 선택(192k/128k/96k) 기능 추가, 상태 저장(localStorage) 및 서버/클라이언트 2중 재연결 안정성 강화"}
