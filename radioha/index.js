@@ -1,8 +1,8 @@
 const port = 3005;
-const atype_list = [192, 128, 96];
 const mytoken = 'homeassistant';
 
 const http = require('http');
+const https = require('https');
 const child_process = require("child_process");
 const fs = require('fs');
 const axios = require('axios');
@@ -27,9 +27,9 @@ function getkbs(param) {
     return new Promise((resolve) => {
         let kbs_ch = { 'kbs_1radio': '21', 'kbs_3radio': '23', 'kbs_classic': '24', 'kbs_cool': '25', 'kbs_happy': '22' };
         instance.get('https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/' + kbs_ch[param], {
-            headers: { 
-                'User-Agent': FULL_UA, 
-                'referer': 'https://onair.kbs.co.kr/' 
+            headers: {
+                'User-Agent': FULL_UA,
+                'Referer': 'https://onair.kbs.co.kr/'
             }
         }).then(response => {
             const kbs_src = response.data.channel_item;
@@ -47,36 +47,36 @@ function getkbs(param) {
 
 // MBC 주소 파싱
 function getmbc(ch) {
-    return new Promise(function (resolve, reject) {
-        try {
-            let mbc_ch = {
-                'mbc_fm4u': 'mfm',
-                'mbc_fm': 'sfm',
-            };
+    return new Promise(function (resolve, reject) {
+        try {
+            let mbc_ch = {
+                'mbc_fm4u': 'mfm',
+                'mbc_fm': 'sfm',
+            };
 
-            instance({
-                method: 'get',
-                url: 'https://sminiplay.imbc.com/aacplay.ashx?agent=webapp&channel=' + mbc_ch[ch] + '&callback=jarvis.miniInfo.loadOnAirComplete',
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36',
-                    'Referer': 'https://mini.imbc.com/',
-                    'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-                    'Accept-Encoding': 'gzip, deflate'
-                }
-            })
+            instance({
+                method: 'get',
+                url: 'https://sminiplay.imbc.com/aacplay.ashx?agent=webapp&channel=' + mbc_ch[ch] + '&callback=jarvis.miniInfo.loadOnAirComplete',
+                headers: {
+                    'User-Agent': FULL_UA,
+                    'Referer': 'https://mini.imbc.com/',
+                    'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+                    'Accept-Encoding': 'gzip, deflate'
+                }
+            })
 
-                .then(response => {
-                    var text = 'https://' + response.data.split('"https://')[1].split('"')[0];
-                    resolve(text);
+                .then(response => {
+                    var text = 'https://' + response.data.split('"https://')[1].split('"')[0];
+                    resolve(text);
 
-                }).catch(e => {
-                    console.log(e)
-                    resolve("invalid");
-                })
-        } catch {
-            resolve("invalid");
-        }
-    })
+                }).catch(e => {
+                    console.log(e)
+                    resolve("invalid");
+                })
+        } catch {
+            resolve("invalid");
+        }
+    })
 }
 
 // SBS 주소 파싱
@@ -84,9 +84,9 @@ function getsbs(ch) {
     return new Promise((resolve) => {
         let sbs_ch = { 'sbs_power': ['powerfm', 'powerpc'], 'sbs_love': ['lovefm', 'lovepc'] };
         instance.get(`https://apis.sbs.co.kr/play-api/1.0/livestream/${sbs_ch[ch][1]}/${sbs_ch[ch][0]}?protocol=hls&ssl=Y`, {
-            headers: { 
-                'User-Agent': FULL_UA, 
-                'Referer': 'https://gorealraplayer.radio.sbs.co.kr/' 
+            headers: {
+                'User-Agent': FULL_UA,
+                'Referer': 'https://gorealraplayer.radio.sbs.co.kr/'
             }
         }).then(response => resolve(response.data)).catch(() => resolve("invalid"));
     });
@@ -99,40 +99,34 @@ function return_pipe(urls, resp, req, key) {
     const baseURL = `http://${req.headers.host || 'localhost'}`;
     const myUrl = new URL(req.url, baseURL);
     const urlParams = myUrl.searchParams;
-    let atype = parseInt(urlParams.get("atype")) || 0;
-     /**
-     * [추가] 특정 채널 예외 처리
-     * WBS, TBS 등 copy 모드 재생 불가 채널은 강제로 트랜스코딩(128k) 적용
-     */    
-    const forceTranscodeList = ['wbs', 'tbs']; // radio-list.json에 등록된 키값을 넣으세요
-    if (forceTranscodeList.includes(key) && atype === 0) {
-        atype = 2; // 0(Auto) 대신 2(128k)로 강제 변경
-        console.log(`[Force Transcode] ${key} - 원본 재생 불가 채널이므로 128k로 전환합니다.`);
+    let bitrateRaw = urlParams.get("atype") || "128";
+    const bitrate = parseInt(bitrateRaw) || 128;
+
+    // 채널 맞춤형 헤더 구성 (필요한 경우에만 Referer 추가)
+    let headerStr = `User-Agent: ${FULL_UA}\r\n`;
+    if (key === 'obs') {
+        headerStr += `Referer: https://www.obs.co.kr/\r\n`;
     }
 
-    let ffmpegArgs = [
-        "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1",
-        "-reconnect_delay_max", "5", "-reconnect_on_network_error", "1",
-        "-reconnect_on_http_error", "4xx,5xx", "-fflags", "nobuffer+genpts+flush_packets",
-        "-flags", "low_delay", "-probesize", "32768", "-analyzeduration", "500000",
-        "-headers", `User-Agent: ${FULL_UA}`,
-        "-loglevel", "error", "-i", urls, "-vn"
+    // [Legacy Engine - Smart & Resilient] 조건부 헤더 + 자가 치유(Reconnect) 로직
+    const ffmpegArgs = [
+        "-headers", headerStr,
+        "-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "5",
+        "-loglevel", "error", "-i", urls,
+        "-c:a", "mp3", "-b:a", `${bitrate}k`, "-ac", "2",
+        "-bufsize", "256K", "-f", "wav", "pipe:1"
     ];
 
-    if (atype === 0) {
-        // [수정 포인트 1] -c:a copy는 유지하되, 
-        // 만약 원본이 ADTS가 아니라면 브라우저가 못 읽을 확률이 99%입니다.
-        ffmpegArgs.push("-c:a", "copy"); 
-        console.log(`[Pure Pass-through Test] ${key}`);
-    } else {
-        const bitrate = atype_list[atype - 1] || 128;
-        ffmpegArgs.push("-c:a", "aac", "-b:a", bitrate + "k", "-ac", "2", "-bufsize", (bitrate * 2) + "k", "-af", "aresample=async=1" );
-        console.log(`[Transcode] ${key} (${bitrate}k)`);
-    }
-    
-    ffmpegArgs.push("-f", "adts", "pipe:1");    
+    console.log(`[Smart Engine] ${key} - ${bitrate}k (Reconnect: ON, Buffer: 256K)`);
 
-    resp.writeHead(200, { 'Content-Type': 'audio/aac', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' });
+    resp.writeHead(200, {
+        'Content-Type': 'audio/wav',
+        'Transfer-Encoding': 'chunked',
+        'Connection': 'keep-alive',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    });
 
     const xffmpeg = child_process.spawn("ffmpeg", ffmpegArgs, { detached: false });
     xffmpeg.stdout.pipe(resp);
