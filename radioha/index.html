@@ -105,10 +105,9 @@
         <div class="quality-section">
             <div class="label">스트리밍 음질 선택</div>
             <select id="quality">
-                <option value="0" selected>Auto (원본 - 권장)</option>
-                <option value="1">192k (고음질)</option>
-                <option value="2">128k (보통)</option>
-                <option value="3">96k (절약)</option>
+                <option value="192">192k (고음질)</option>
+                <option value="128" selected>128k (보통 - 기본)</option>
+                <option value="96">96k (절약)</option>
             </select>
         </div>
         <div class="grid">
@@ -129,7 +128,22 @@
         const quality = document.getElementById('quality');
         let currentKey = "";
 
-        player.volume = 0.5;
+        // 초기 설정 로드
+        window.addEventListener('DOMContentLoaded', () => {
+            const lastQuality = localStorage.getItem('radio_quality');
+            const lastVolume = localStorage.getItem('radio_volume');
+            const lastChannels = localStorage.getItem('radio_last_key');
+
+            if (lastQuality) quality.value = lastQuality;
+            else quality.value = "128"; // 기본값 128k
+
+            if (lastVolume) player.volume = parseFloat(lastVolume);
+            else player.volume = 0.5;
+
+            if (lastChannels) {
+                setTimeout(() => playRadio(lastChannels), 500); 
+            }
+        });
 
         function playRadio(key) {
             currentKey = key;
@@ -138,17 +152,29 @@
             const streamUrl = "radio?token={{MY_TOKEN}}&keys=" + key + "&atype=" + atype;
             
             document.querySelectorAll('.radio-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.innerText.toLowerCase() === key.toLowerCase());
+                const btnKey = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+                btn.classList.toggle('active', btnKey === key);
             });
 
             player.src = streamUrl;
-            player.play();
+            player.play().catch(e => {
+                status.innerHTML = "자동 재생이 차단되었습니다. 재생 버튼을 눌러주세요.";
+            });
             status.innerHTML = "재생 중: " + key.toUpperCase() + " [" + qualityText + "]";
+            
+            // 상태 저장
+            localStorage.setItem('radio_last_key', key);
+            localStorage.setItem('radio_quality', atype);
         }
 
         quality.addEventListener('change', () => {
+            localStorage.setItem('radio_quality', quality.value);
             if (currentKey) playRadio(currentKey);
         });
+
+        player.onvolumechange = () => {
+            localStorage.setItem('radio_volume', player.volume);
+        };
 
         // 오류 발생 시 자동 재시도
         player.onerror = () => {
