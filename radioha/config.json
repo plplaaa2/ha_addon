@@ -1,7 +1,9 @@
 {
   "name": "Korea Radio for HA",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "slug": "radioha",
+  "hassio_api": true,
+  "homeassistant_api": true,
   "description": "Korea Intenet Radio for HA",
   "arch": [
     "armhf",
@@ -19,5 +21,11 @@
   "url": "https://github.com/projectdhs/ha_addon",
   "startup": "application",
   "boot": "auto",
-  "audio": true
+  "audio": true,
+  "options": {
+    "token": "homeassistant"
+  },
+  "schema": {
+    "token": "str"
+  }
 }
