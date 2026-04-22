@@ -2,100 +2,143 @@
 <html>
 <head>
     <title>Korea Radio Player</title>
-    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        :root {
+            --primary: #4facfe;
+            --secondary: #00f2fe;
+            --bg: #1a1a2e;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --danger: #ff4444;
+        }
         body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            background-color: #1a1a1a; 
-            color: #fff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, var(--bg) 0%, #16213e 100%); 
+            color: white; 
             margin: 0; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            min-height: 100vh; 
+            min-height: 100vh;
         }
         .header { 
-            margin-top: 30px; 
-            margin-bottom: 20px; 
-            font-size: 24px; 
-            font-weight: bold; 
-            color: #00aaff; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-        }
-        .container { 
-            width: 90%; 
-            max-width: 600px; 
-            background: #262626; 
-            padding: 20px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
-            margin-bottom: 120px;
-        }
-        .quality-section { margin-bottom: 20px; }
-        .label { font-size: 12px; color: #888; margin-bottom: 8px; }
-        select { 
+            background: rgba(0,0,0,0.3); 
             width: 100%; 
-            padding: 12px; 
+            padding: 20px; 
+            text-align: center; 
+            font-size: 1.5em; 
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .container { padding: 20px; width: 95%; max-width: 1000px; }
+        .quality-section {
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .label { font-weight: bold; color: var(--primary); }
+        select { 
+            padding: 8px 12px; 
             border-radius: 8px; 
-            border: 1px solid #333; 
-            background: #1a1a1a; 
-            color: #fff; 
-            appearance: none; 
-            cursor: pointer; 
+            background: #243b55; 
+            color: white; 
+            border: 1px solid var(--primary); 
+            cursor: pointer;
         }
         .grid { 
             display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 10px; 
-            margin-bottom: 30px; 
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 150px;
         }
         .radio-btn { 
-            padding: 15px; 
-            border-radius: 8px; 
-            border: 1px solid #333; 
-            background: #333; 
-            color: #fff; 
-            font-weight: bold; 
+            background: var(--card-bg); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 15px 10px; 
+            border-radius: 12px; 
+            color: white; 
             cursor: pointer; 
-            transition: all 0.2s; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
-        .radio-btn:hover { background: #444; }
-        .radio-btn.active { background: #ff9900; color: #000; border-color: #ff9900; }
-        
+        .btn-name { font-weight: bold; font-size: 0.95em; }
+        .btn-freq { font-size: 0.8em; color: var(--secondary); opacity: 0.8; }
+        .radio-btn:hover { 
+            background: rgba(79, 172, 254, 0.2); 
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        .radio-btn.active { 
+            background: linear-gradient(to right, var(--secondary) 0%, var(--primary) 100%); 
+            color: #0b132b;
+            border: none;
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
+        }
+        .radio-btn.active .btn-freq { color: #0b132b; opacity: 1; }
         .player-section { 
             position: fixed; 
             bottom: 0; 
-            left: 0; 
             width: 100%; 
-            background: #262626; 
-            border-top: 1px solid #333; 
-            padding: 15px 0; 
+            background: rgba(22, 33, 62, 0.95); 
+            backdrop-filter: blur(10px);
+            padding: 20px; 
             display: flex; 
             flex-direction: column; 
-            align-items: center; 
+            align-items: center;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            z-index: 1000;
         }
-        .info { width: 90%; max-width: 600px; margin-bottom: 10px; font-size: 14px; color: #ccc; }
-        .player-container { 
-            width: 90%; 
-            max-width: 600px; 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            background: #fff; 
-            border-radius: 25px; 
-            padding: 5px 20px; 
-            color: #000; 
+        .info { margin-bottom: 12px; font-size: 1.1em; color: var(--secondary); min-height: 1.2em; text-align: center; }
+        
+        .driver-container {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            border-radius: 30px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+
+        /* 웹 플레이어 스타일 */
+        #web_driver { width: 100%; display: flex; align-items: center; }
         audio { width: 100%; height: 40px; }
+
+        /* 스피커 리모컨 스타일 */
+        #speaker_driver { 
+            display: none; 
+            width: 100%; 
+            justify-content: space-around; 
+            align-items: center; 
+            color: #333;
+        }
+        .remote-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .remote-btn:hover { background: rgba(0,0,0,0.05); }
+        .remote-btn svg { fill: #333; width: 32px; height: 32px; }
+        .remote-btn.stop svg { fill: var(--danger); }
+        .btn-label { font-size: 0.8em; color: #666; margin-top: 2px; }
+        .remote-group { display: flex; flex-direction: column; align-items: center; }
     </style>
 </head>
 <body>
@@ -105,9 +148,15 @@
         <div class="quality-section">
             <div class="label">스트리밍 음질 선택</div>
             <select id="quality">
-                <option value="192">192k (고음질)</option>
-                <option value="128" selected>128k (보통 - 기본)</option>
-                <option value="96">96k (절약)</option>
+                <option value="0">192k (고음질)</option>
+                <option value="1" selected>128k (보통 - 기본)</option>
+                <option value="2">96k (절약)</option>
+            </select>
+        </div>
+        <div class="quality-section">
+            <div class="label">출력 기기 선택</div>
+            <select id="player_select">
+                <option value="web">이 웹 브라우저에서 재생 (기본)</option>
             </select>
         </div>
         <div class="grid">
@@ -117,8 +166,33 @@
 
     <div class="player-section">
         <div class="info" id="status">재생 대기 중...</div>
-        <div class="player-container">
-            <audio id="player" controls></audio>
+        <div class="driver-container">
+            <!-- 웹 플레이어 UI -->
+            <div id="web_driver">
+                <audio id="player" controls></audio>
+            </div>
+            
+            <!-- 스피커 전용 리모컨 UI -->
+            <div id="speaker_driver">
+                <div class="remote-group">
+                    <button class="remote-btn" onclick="mediaAction('media_play')">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <span class="btn-label">재생</span>
+                </div>
+                <div class="remote-group">
+                    <button class="remote-btn" onclick="mediaAction('media_pause')">
+                        <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </button>
+                    <span class="btn-label">일시정지</span>
+                </div>
+                <div class="remote-group">
+                    <button class="remote-btn stop" onclick="mediaAction('media_stop')">
+                        <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+                    </button>
+                    <span class="btn-label">정지</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -126,45 +200,153 @@
         const player = document.getElementById('player');
         const status = document.getElementById('status');
         const quality = document.getElementById('quality');
+        const playerSelect = document.getElementById('player_select');
+        const webDriver = document.getElementById('web_driver');
+        const speakerDriver = document.getElementById('speaker_driver');
+        
         let currentKey = "";
+        let lastStartedPlayerId = "";
 
-        // 초기 설정 로드
+        async function loadPlayers() {
+            try {
+                const response = await fetch("get_players?token={{MY_TOKEN}}");
+                const players = await response.json();
+                players.forEach(p => {
+                    const opt = document.createElement("option");
+                    opt.value = p.id;
+                    opt.innerText = p.name;
+                    playerSelect.appendChild(opt);
+                });
+                
+                const lastSavedPlayer = localStorage.getItem('radio_player_id');
+                if (lastSavedPlayer) {
+                    playerSelect.value = lastSavedPlayer;
+                    updateUIByPlayer();
+                }
+            } catch (e) {
+                console.error("기기 목록 로드 실패", e);
+            }
+        }
+
+        function updateUIByPlayer() {
+            if (playerSelect.value === "web") {
+                webDriver.style.display = "flex";
+                speakerDriver.style.display = "none";
+            } else {
+                webDriver.style.display = "none";
+                speakerDriver.style.display = "flex";
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
+            const lastKey = localStorage.getItem('radio_last_key');
             const lastQuality = localStorage.getItem('radio_quality');
             const lastVolume = localStorage.getItem('radio_volume');
-            const lastChannels = localStorage.getItem('radio_last_key');
-
+            
             if (lastQuality) quality.value = lastQuality;
-            else quality.value = "128"; // 기본값 128k
-
             if (lastVolume) player.volume = parseFloat(lastVolume);
             else player.volume = 0.5;
 
-            if (lastChannels) {
-                setTimeout(() => playRadio(lastChannels), 500); 
-            }
+            loadPlayers().then(() => {
+                if (lastKey) {
+                    setTimeout(() => playRadio(lastKey), 500); 
+                }
+            });
         });
 
         function playRadio(key) {
-            currentKey = key;
             const atype = quality.value;
-            const qualityText = quality.options[quality.selectedIndex].text;
-            const streamUrl = "radio?token={{MY_TOKEN}}&keys=" + key + "&atype=" + atype;
+            const targetPlayer = playerSelect.value;
             
+            // 버튼들 중에서 현재 key에 해당하는 버튼 찾기
+            const buttons = document.querySelectorAll('.radio-btn');
+            let displayName = key.toUpperCase();
+            let displayFreq = "";
+
+            buttons.forEach(btn => {
+                const btnKey = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+                if (btnKey === key) {
+                    btn.classList.add('active');
+                    displayName = btn.querySelector('.btn-name').innerText;
+                    displayFreq = btn.querySelector('.btn-freq').innerText;
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            const fullStatus = `${displayName} ${displayFreq} 재생 중`;
+            
+            if (targetPlayer === "web") {
+                player.src = "radio?token={{MY_TOKEN}}&keys=" + key + "&atype=" + atype;
+                player.play().catch(() => { status.innerHTML = "자동 재생이 차단되었습니다. 재생 버튼을 눌러주세요."; });
+                status.innerHTML = fullStatus + " (웹 브라우저)";
+            } else {
+                player.pause(); 
+                player.src = ""; 
+                status.innerHTML = displayName + " 명령 송신 중...";
+                fetch("play_on_player?token={{MY_TOKEN}}&entity_id=" + targetPlayer + "&keys=" + key + "&atype=" + atype)
+                    .then(res => {
+                        if (res.ok) status.innerHTML = fullStatus + " (" + playerSelect.options[playerSelect.selectedIndex].text + ")";
+                        else status.innerHTML = "재생 명령 실패";
+                    }).catch(e => {
+                        status.innerHTML = "통신 오류";
+                    });
+            }
+
+            currentKey = key;
+            lastStartedPlayerId = targetPlayer;
+            
+            localStorage.setItem('radio_last_key', key);
+            localStorage.setItem('radio_quality', atype);
+            localStorage.setItem('radio_player_id', targetPlayer);
+        }
+
+        function updateButtonActive(key) {
             document.querySelectorAll('.radio-btn').forEach(btn => {
                 const btnKey = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
                 btn.classList.toggle('active', btnKey === key);
             });
+        }
 
-            player.src = streamUrl;
-            player.play().catch(e => {
-                status.innerHTML = "자동 재생이 차단되었습니다. 재생 버튼을 눌러주세요.";
-            });
-            status.innerHTML = "재생 중: " + key.toUpperCase() + " [" + qualityText + "]";
-            
-            // 상태 저장
-            localStorage.setItem('radio_last_key', key);
-            localStorage.setItem('radio_quality', atype);
+        async function mediaAction(action) {
+            const targetPlayer = playerSelect.value;
+            if (targetPlayer === "web") return;
+
+            status.innerHTML = "명령 전송 중...";
+            try {
+                const res = await fetch(`media_action?token={{MY_TOKEN}}&entity_id=${targetPlayer}&action=${action}`);
+                if (res.ok) {
+                    if (action === 'media_stop') {
+                        status.innerHTML = "정지 완료";
+                        updateButtonActive("");
+                        currentKey = "";
+                        lastStartedPlayerId = "";
+                        localStorage.removeItem('radio_last_key');
+                    } else if (action === 'media_pause') {
+                        status.innerHTML = "일시정지됨";
+                    } else {
+                        status.innerHTML = "명령 수행 완료";
+                    }
+                } else {
+                    status.innerHTML = "명령 실패";
+                }
+            } catch (e) {
+                status.innerHTML = "통신 오류";
+            }
+        }
+
+        // 정지 버튼 (공용)
+        function stopRadio() {
+            if (playerSelect.value === "web") {
+                player.pause();
+                player.src = "";
+                status.innerHTML = "웹 재생 정지됨";
+                updateButtonActive("");
+                currentKey = "";
+                localStorage.removeItem('radio_last_key');
+            } else {
+                mediaAction('media_stop');
+            }
         }
 
         quality.addEventListener('change', () => {
@@ -172,23 +354,29 @@
             if (currentKey) playRadio(currentKey);
         });
 
-        player.onvolumechange = () => {
-            localStorage.setItem('radio_volume', player.volume);
-        };
-
-        // 오류 발생 시 자동 재시도
-        player.onerror = () => {
-            if (currentKey) {
-                status.innerHTML = "연결 오류: 다시 연결하는 중... (3초 후)";
-                setTimeout(() => playRadio(currentKey), 3000);
+        playerSelect.addEventListener('change', () => {
+            const newPlayer = playerSelect.value;
+            updateUIByPlayer();
+            
+            if (lastStartedPlayerId && lastStartedPlayerId !== newPlayer) {
+                const oldPlayer = lastStartedPlayerId;
+                if (oldPlayer !== "web") {
+                    fetch(`media_action?token={{MY_TOKEN}}&entity_id=${oldPlayer}&action=media_stop`);
+                } else {
+                    player.pause();
+                    player.src = "";
+                }
             }
-        };
+            
+            localStorage.setItem('radio_player_id', newPlayer);
+            if (currentKey) playRadio(currentKey);
+        });
 
-        // 스트림이 끊겼을 때 자동 재시도
-        player.onended = () => {
-            if (currentKey) {
-                status.innerHTML = "스트림 종료: 다시 연결하는 중... (2초 후)";
-                setTimeout(() => playRadio(currentKey), 2000);
+        player.onvolumechange = () => { localStorage.setItem('radio_volume', player.volume); };
+        player.onerror = () => {
+            if (currentKey && playerSelect.value === "web") {
+                status.innerHTML = "연결 오류: 다시 연결하는 중...";
+                setTimeout(() => playRadio(currentKey), 3000);
             }
         };
     </script>
