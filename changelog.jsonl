@@ -1,2 +1,4 @@
 {"version": "1.0.0", "date": "2026-04-20", "description": "초기 릴리즈"}
 {"version": "1.1.0", "date": "2026-04-21", "description": "초고속 WAV/MP3 재생 엔진 도입, 음질 선택(192k/128k/96k) 기능 추가, 상태 저장(localStorage) 및 서버/클라이언트 2중 재연결 안정성 강화"}
+{"version": "1.2.0", "date": "2026-04-22", "description": "사용자 정의 토큰 설정 기능 추가 (HA 구성 탭 연동), /data/options.json 동적 로드 구현"}
+{"version": "2.0.0", "date": "2026-04-22", "description": "메이저 업데이트: 홈어시스턴트 미디어 플레이어(스피커) 연동, 기기별 동적 리모컨 UI(Play/Pause/Stop), 내부 IP 자동 감지, 주파수 기반 채널 정렬 및 상세 정보 표시 기능 추가"}
