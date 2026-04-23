@@ -150,6 +150,22 @@
         .remote-btn.stop svg { fill: var(--danger); }
         .btn-label { font-size: 0.8em; color: #666; margin-top: 2px; }
         .remote-group { display: flex; flex-direction: column; align-items: center; }
+
+        /* 볼륨 컨트롤 추가 */
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 10px;
+        }
+        .mute-btn { cursor: pointer; transition: transform 0.2s; }
+        .mute-btn:hover { transform: scale(1.1); }
+        input[type="range"].speaker-vol {
+            width: 100px;
+            height: 5px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -204,6 +220,11 @@
                     </button>
                     <span class="btn-label">정지</span>
                 </div>
+                <!-- 볼륨 컨트롤 추가 -->
+                <div class="volume-container">
+                    <svg id="mute_icon" class="mute-btn" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" onclick="toggleMute()"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                    <input type="range" id="speaker_volume" class="speaker-vol" min="0" max="1" step="0.05" value="0.5" oninput="setSpeakerVolume(this.value)">
+                </div>
             </div>
         </div>
     </div>
@@ -218,10 +239,15 @@
         
         let currentKey = "";
         let lastStartedPlayerId = "";
+        let isMuted = false;
 
         async function loadPlayers() {
+            if (!API_CONFIG.isLocal) {
+                console.log("외부 접속: 스피커 목록 비활성화");
+                return;
+            }
             try {
-                const response = await fetch("get_players?token={{MY_TOKEN}}");
+                const response = await fetch("get_players?token=" + API_CONFIG.token);
                 const players = await response.json();
                 players.forEach(p => {
                     const opt = document.createElement("option");
@@ -288,17 +314,17 @@
             const fullStatus = `${displayName} ${displayFreq} 재생 중`;
             
             if (targetPlayer === "web") {
-                player.src = "radio?token={{MY_TOKEN}}&keys=" + key + "&atype=" + atype;
+                player.src = "radio?token=" + API_CONFIG.token + "&keys=" + key + "&atype=" + atype;
                 player.play().catch(() => { status.innerHTML = "자동 재생이 차단되었습니다. 재생 버튼을 눌러주세요."; });
                 status.innerHTML = fullStatus + " (웹 브라우저)";
             } else {
                 player.pause(); 
                 player.src = ""; 
                 status.innerHTML = displayName + " 명령 송신 중...";
-                fetch("play_on_player?token={{MY_TOKEN}}&entity_id=" + targetPlayer + "&keys=" + key + "&atype=" + atype)
+                fetch("play_on_player?token=" + API_CONFIG.token + "&entity_id=" + targetPlayer + "&keys=" + key + "&atype=" + atype)
                     .then(res => {
                         if (res.ok) status.innerHTML = fullStatus + " (" + playerSelect.options[playerSelect.selectedIndex].text + ")";
-                        else status.innerHTML = "재생 명령 실패";
+                        else status.innerHTML = "재생 명령 실패 (로컬 네트워크 확인)";
                     }).catch(e => {
                         status.innerHTML = "통신 오류";
                     });
@@ -325,7 +351,7 @@
 
             status.innerHTML = "명령 전송 중...";
             try {
-                const res = await fetch(`media_action?token={{MY_TOKEN}}&entity_id=${targetPlayer}&action=${action}`);
+                const res = await fetch(`media_action?token=${API_CONFIG.token}&entity_id=${targetPlayer}&action=${action}`);
                 if (res.ok) {
                     if (action === 'media_stop') {
                         status.innerHTML = "정지 완료";
@@ -346,6 +372,25 @@
             }
         }
 
+        async function setSpeakerVolume(vol) {
+            const targetPlayer = playerSelect.value;
+            if (targetPlayer === "web") return;
+            try {
+                await fetch(`set_volume?token=${API_CONFIG.token}&entity_id=${targetPlayer}&volume=${vol}`);
+            } catch (e) { console.error("Volume control failed", e); }
+        }
+
+        async function toggleMute() {
+            const targetPlayer = playerSelect.value;
+            if (targetPlayer === "web") return;
+            isMuted = !isMuted;
+            const muteIcon = document.getElementById('mute_icon');
+            muteIcon.style.stroke = isMuted ? "var(--danger)" : "#333";
+            try {
+                await fetch(`mute_volume?token=${API_CONFIG.token}&entity_id=${targetPlayer}&mute=${isMuted}`);
+            } catch (e) { console.error("Mute toggle failed", e); }
+        }
+
         quality.addEventListener('change', () => {
             localStorage.setItem('radio_quality', quality.value);
             if (currentKey) playRadio(currentKey);
@@ -358,7 +403,7 @@
             if (lastStartedPlayerId && lastStartedPlayerId !== newPlayer) {
                 const oldPlayer = lastStartedPlayerId;
                 if (oldPlayer !== "web") {
-                    fetch(`media_action?token={{MY_TOKEN}}&entity_id=${oldPlayer}&action=media_stop`);
+                    fetch(`media_action?token=${API_CONFIG.token}&entity_id=${oldPlayer}&action=media_stop`);
                 } else {
                     player.pause();
                     player.src = "";
@@ -377,5 +422,7 @@
             }
         };
     </script>
+</body>
+</html>
 </body>
 </html>
