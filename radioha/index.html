@@ -35,31 +35,32 @@
         /* 설정 영역 한 줄 배치 스타일 */
         .settings-row {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
+            width: 100%;
         }
         .quality-section {
             flex: 1;
-            min-width: 250px;
             background: var(--card-bg);
-            padding: 12px 15px;
-            border-radius: 15px;
+            padding: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             border: 1px solid rgba(255,255,255,0.05);
+            min-width: 0; /* 내용에 맞춰 축소 가능하게 */
         }
-        .label { font-weight: bold; color: var(--primary); white-space: nowrap; }
+        .label { font-weight: bold; color: var(--primary); white-space: nowrap; font-size: 0.85em; }
         select { 
             flex: 1;
-            padding: 8px 12px; 
+            padding: 6px 8px; 
             border-radius: 8px; 
             background: #243b55; 
             color: white; 
             border: 1px solid var(--primary); 
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 0.85em;
+            min-width: 0;
         }
 
         .grid { 
@@ -311,7 +312,7 @@
                 }
             });
 
-            const fullStatus = `${displayName} ${displayFreq} 재생 중`;
+            const fullStatus = `${displayName} 재생 중`;
             
             if (targetPlayer === "web") {
                 player.src = "radio?token=" + API_CONFIG.token + "&keys=" + key + "&atype=" + atype;
