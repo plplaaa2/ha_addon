@@ -108,13 +108,37 @@ function getmbc(ch) {
 // SBS 주소 파싱
 function getsbs(ch) {
     return new Promise((resolve) => {
-        let sbs_ch = { 'sbs_power': ['powerfm', 'powerpc'], 'sbs_love': ['lovefm', 'lovepc'] };
-        instance.get(`https://apis.sbs.co.kr/play-api/1.0/livestream/${sbs_ch[targetMappingIdx][1]}/${sbs_ch[targetMappingIdx][0]}?protocol=hls&ssl=Y`.replace('targetMappingIdx', ch), {
+        // 인자로 받은 'ch' 변수를 사용해야 합니다.
+        let sbs_ch = { 
+            'sbs_power': ['powerfm', 'powerpc'], 
+            'sbs_love': ['lovefm', 'lovepc'] 
+        };
+
+        // 1. ch 값이 sbs_ch에 존재하는지 확인 (예외 처리)
+        if (!sbs_ch[ch]) {
+            console.error(`[SBS] Invalid channel key: ${ch}`);
+            return resolve("invalid");
+        }
+
+        // 2. 템플릿 리터럴을 사용하여 URL 생성
+        // 기존의 .replace('targetMappingIdx', ch) 방식은 문자열에 해당 텍스트가 없어서 동작하지 않았습니다.
+        const url = `https://apis.sbs.co.kr/play-api/1.0/livestream/${sbs_ch[ch][1]}/${sbs_ch[ch][0]}?protocol=hls&ssl=Y`;
+
+        instance.get(url, {
             headers: {
                 'User-Agent': FULL_UA,
                 'Referer': 'https://gorealraplayer.radio.sbs.co.kr/'
             }
-        }).then(response => resolve(response.data)).catch(() => resolve("invalid"));
+        })
+        .then(response => {
+            // SBS API는 스트림 URL 문자열을 바로 반환하거나 JSON을 반환하므로 
+            // 응답 데이터 형식에 따라 처리 (보통 response.data에 URL이 담김)
+            resolve(response.data);
+        })
+        .catch((err) => {
+            console.error(`[SBS] API 호출 실패: ${err.message}`);
+            resolve("invalid");
+        });
     });
 }
 
