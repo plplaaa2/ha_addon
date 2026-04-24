@@ -61,3 +61,6 @@ Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로
 
 * 본 프로젝트는 **ISC License**를 따릅니다.
 * **저작권 고지**: 본 애드온은 각 방송사에서 제공하는 공개 스트리밍 주소를 활용하며, 모든 콘텐츠의 저작권은 해당 방송사에 있습니다. 상업적 목적으로의 사용을 금합니다.
+
+## 후원
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/plplaaa2)
