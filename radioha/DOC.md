@@ -1,13 +1,13 @@
-# 📻 Korea Radio for Home Assistant (v2.6.1)
+# 📻 Korea Radio for Home Assistant (v2.6.2)
 
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![License: Non-Commercial](https://img.shields.io/badge/License-Non--Commercial-orange.svg)](LICENSE)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Add--on-blue.svg)](https://www.home-assistant.io/)
 
 Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로 청취할 수 있는 애드온입니다. 이제 브라우저 재생을 넘어, 우리 집 곳곳의 **AI 스피커(Google Home, Sonos 등)**로도 라디오를 감상하세요.
 
 ---
 
-## ✨ 주요 특징 (v2.6.1 Update)
+## ✨ 주요 특징 (v2.6.2 Update)
 
 * 🛡️ **강력한 보안 체계**: IP 기반 로컬 네트워크 제어 제한, HTTP 보안 헤더(CSP 등) 적용, API 입력값 엄격 검증.
 * 🔒 **토큰 보안**: 서버 주입 방식의 전역 변수화를 통해 소스 코드 내 토큰 노출을 차단.
@@ -108,5 +108,6 @@ rest_command:
 
 ## 📜 라이선스 및 유의사항
 
-* 본 프로젝트는 **ISC License**를 따릅니다.
-* **저작권 고지**: 본 애드온은 각 방송사에서 제공하는 공개 스트리밍 주소를 활용하며, 모든 콘텐츠의 저작권은 해당 방송사에 있습니다. 상업적 목적으로의 사용을 금합니다.
+* 본 프로젝트는 **개인적/비상업적 용도 전용(Personal/Non-Commercial Use Only)** 라이선스를 따릅니다.
+* **상업적 활용 금지**: 카페, 식당, 사무실 등 영리 목적의 공간에서 고객 서비스용으로 사용하는 행위 및 본 소프트웨어를 통한 수익 창출을 엄격히 금지합니다.
+* **저작권 고지**: 본 애드온은 기술적 연구 및 개인적 편의를 위해 제작된 오픈소스 프로젝트로, 각 방송사의 공식 앱이나 웹페이지 이용을 대체하기 위한 용도가 아닙니다. 방송사의 요청이 있을 경우 언제든 배포가 중단되거나 삭제될 수 있습니다.
