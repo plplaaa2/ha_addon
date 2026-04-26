@@ -1,16 +1,18 @@
-ISC License
+# Personal and Non-Commercial Use License
 
-Copyright (c) [2022], [projectdhs]
-Copyright (c) [2026], [plplaaa2]
+Copyright (c) 2026 plplaaa2
 
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
+본 소프트웨어는 개인적이고 비상업적인 용도로만 사용이 가능합니다. 
 
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+## 허용 사항 (Permitted)
+1. 개인적인 용도의 설치 및 사용
+2. 소스 코드의 수정 및 개인적 활용
+3. 비영리 목적인 경우에 한해 타인에게 공유 및 배포
+
+## 금지 사항 (Prohibited)
+1. 본 소프트웨어를 유료로 판매하거나 수익을 창출하는 행위
+2. 상업적인 서비스(카페, 식당, 사무실 등 영리 목적 공간)에서 고객 서비스용으로 활용하는 행위
+3. 본 소프트웨어의 일부 또는 전부를 상업적 제품에 포함시켜 재배포하는 행위
+
+## 면책 조항 (Disclaimer)
+본 소프트웨어는 "있는 그대로" 제공되며, 저작권자는 본 소프트웨어의 사용으로 인해 발생하는 어떠한 손해에 대해서도 책임을 지지 않습니다. 또한 방송사(KBS, MBC, SBS 등)의 정책 변경으로 인해 서비스가 중단될 수 있으며, 모든 방송 콘텐츠의 저작권은 해당 방송사에 있습니다.
