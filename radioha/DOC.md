@@ -1,4 +1,4 @@
-# 📻 Korea Radio for Home Assistant
+# 📻 Korea Radio for Home Assistant (v2.6.1)
 
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Add--on-blue.svg)](https://www.home-assistant.io/)
@@ -7,15 +7,17 @@ Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로
 
 ---
 
-## ✨ 주요 특징
+## ✨ 주요 특징 (v2.6.1 Update)
 
+* 🛡️ **강력한 보안 체계**: IP 기반 로컬 네트워크 제어 제한, HTTP 보안 헤더(CSP 등) 적용, API 입력값 엄격 검증.
+* 🔒 **토큰 보안**: 서버 주입 방식의 전역 변수화를 통해 소스 코드 내 토큰 노출을 차단.
 * 📻 **다양한 방송 채널 지원**: KBS, MBC, SBS 등 지상파부터 TBS, EBS, 국방FM 등 총 19개 채널 지원.
+* ✨ **프리미엄 UI**: 글래스모피즘(Glassmorphism) 기반의 세련된 다크 모드 디자인 및 현대적인 레이아웃.
+* 📺 **대형 디스플레이**: 상단에 대형 주파수 표시 및 이전/다음 채널 탐색 버튼 제공.
 * 🔊 **멀티 미디어 플레이어 통합**: HA에 등록된 모든 미디어 플레이어 기기(스피커)로 즉시 스트리밍 가능.
-* 📱 **동적 리모컨 UI**: 기기 선택에 따라 브라우저 플레이어 또는 스피커 리모컨(Play/Pause/Stop) UI로 자동 전환.
-* 🔀 **스마트 기기 전환**: 기기 선택 변경 시 이전 기기 자동 정지 및 새 기기 즉시 연결 지원.
-* 📊 **주파수 기반 정렬**: 채널을 실제 라디오 주파수 순으로 배치하고, 방송명과 주파수 정보를 상세히 표시.
-* ⚡ **초고속 WAV/MP3 엔진**: 1~2초 내외의 즉각적인 재생 반응 속도 및 자가 치유(Reconnect) 안정성.
-* 🏠 **HA 완벽 통합**: Ingress 지원 및 애드온 구성 탭에서의 보안 토큰 관리 지원.
+* 📱 **지능형 리모컨**: TubePlayer 스타일의 프리미엄 플로팅 리모컨 UI를 통한 외부 스피커 정밀 제어.
+* ⚡ **초고속 엔진**: 즉각적인 재생 반응 속도 및 자가 치유(Reconnect) 안정성 강화.
+* 🏠 **HA 완벽 통합**: Ingress 지원 및 POST JSON 방식의 고도화된 API 지원.
 
 ---
 
@@ -30,9 +32,56 @@ Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로
 - **token**: 구성 탭에서 직접 지정한 토큰값 (기본값: homeassistant)
 - **atype**: 음질 선택 (`0`: 고음질 192k, `1`: 보통 128k, `2`: 절약 96k)
 
-### 미디어 제어 엔드포인트 (v2.0+)
+### 미디어 제어 엔드포인트 (v2.6+)
+모든 미디어 제어 API는 **GET**과 **POST (JSON Body)** 방식을 모두 지원합니다.
+
 `http://<HA_IP>:3005/media_action?token=<MY_TOKEN>&entity_id=<ENTITY_ID>&action=<ACTION>`
-- **action**: `media_play`, `media_pause`, `media_stop` 지원
+- **action**: `media_play`, `media_pause`, `media_stop`
+
+`http://<HA_IP>:3005/set_volume?token=<MY_TOKEN>&entity_id=<ENTITY_ID>&volume=<VOLUME>`
+- **volume**: `0.0` ~ `1.0` 사이의 실수 값
+
+`http://<HA_IP>:3005/mute_volume?token=<MY_TOKEN>&entity_id=<ENTITY_ID>&mute=<TRUE/FALSE>`
+- **mute**: `true` (음소거), `false` (해제)
+
+`http://<HA_IP>:3005/play_on_player?token=<MY_TOKEN>&entity_id=<ENTITY_ID>&keys=<CHANNEL_KEY>&atype=<TYPE>`
+- 스피커로 특정 채널을 즉시 재생 명령 전송 (v2.6+)
+
+#### 📮 POST JSON 호출 예시 (curl)
+```bash
+curl -X POST http://<HA_IP>:3005/play_on_player \
+     -H "Content-Type: application/json" \
+     -d '{
+           "token": "your_token",
+           "entity_id": "media_player.living_room_speaker",
+           "keys": "kbs_cool",
+           "atype": "1"
+         }'
+```
+
+### 🏠 Home Assistant `rest_command` 설정 예제
+`configuration.yaml`에 아래와 같이 설정하여 자동화나 스크립트에서 편리하게 사용할 수 있습니다.
+
+```yaml
+rest_command:
+  radio_play:
+    url: "http://localhost:3005/play_on_player"
+    method: post
+    content_type: "application/json"
+    payload: >
+      {
+        "token": "your_token",
+        "entity_id": "{{ entity_id }}",
+        "keys": "{{ keys }}",
+        "atype": "{{ atype | default('1') }}"
+      }
+
+  radio_action:
+    url: "http://localhost:3005/media_action"
+    method: post
+    content_type: "application/json"
+    payload: '{"token": "your_token", "entity_id": "{{ entity_id }}", "action": "{{ action }}"}'
+```
 
 ---
 
