@@ -99,6 +99,11 @@ rest_command:
 
 [![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fprojectdhs%2Fha_addon)
 
+### 수동 설치
+HA 앱 -> 앱설치 버튼 클릭 -> 상단 점3개 메뉴 클릭 -> 저장소 클릭 -> 추가 클릭 -> 이 저장소 주소 복사해서 추가
+
+```https://github.com/plplaaa2/korea_radio_addon```
+
 ### 설정 (Options)
 1. 애드온 설치 후 **구성(Configuration)** 탭으로 이동합니다.
 2. **token**: 외부 API 호출이나 보안을 위해 본인만의 토큰을 입력하세요 (기본: `homeassistant`).
