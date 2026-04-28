@@ -6,6 +6,9 @@
 
 Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로 청취할 수 있는 애드온입니다. 이제 브라우저 재생을 넘어, 우리 집 곳곳의 **AI 스피커(Google Home, Sonos 등)**로도 라디오를 감상하세요.
 
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/plplaaa2)
+
 ---
 
 ## ✨ 주요 특징
