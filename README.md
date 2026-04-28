@@ -3,11 +3,12 @@
 [![License: Non-Commercial](https://img.shields.io/badge/License-Non--Commercial-orange.svg)](LICENSE)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Add--on-blue.svg)](https://www.home-assistant.io/)
 
+
 Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로 청취할 수 있는 애드온입니다. 이제 브라우저 재생을 넘어, 우리 집 곳곳의 **AI 스피커(Google Home, Sonos 등)**로도 라디오를 감상하세요.
 
 ---
 
-## ✨ 주요 특징 (v2.6.2 Update)
+## ✨ 주요 특징
 
 * 🛡️ **강력한 보안 체계**: IP 기반 로컬 네트워크 제어 제한, HTTP 보안 헤더(CSP 등) 적용, API 입력값 엄격 검증.
 * 🔒 **토큰 보안**: 서버 주입 방식의 전역 변수화를 통해 소스 코드 내 토큰 노출을 차단.
@@ -24,6 +25,10 @@ Home Assistant 내에서 대한민국 주요 라디오 방송을 실시간으로
 ## 🔌 API 및 외부 호출 사용법
 
 본 애드온은 외부 플레이어(VLC, 미디어 자동화 등)에서 직접 호출할 수 있는 API를 제공합니다.
+
+### 데이터 제공 API (v2.7+)
+`http://<HA_IP>:3005/get_radio_list?token=<MY_TOKEN>`
+- 현재 서버의 `radio-list.json` 내용을 반환합니다.
 
 ### 스트리밍 엔드포인트
 `http://<HA_IP>:3005/radio?keys=<CHANNEL_KEY>&token=<MY_TOKEN>&atype=<TYPE>`
