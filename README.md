@@ -1,4 +1,4 @@
-# 📻 Korea Radio for Home Assistant (v2.6.2)
+# 📻 Korea Radio for Home Assistant
 
 [![License: Non-Commercial](https://img.shields.io/badge/License-Non--Commercial-orange.svg)](LICENSE)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Add--on-blue.svg)](https://www.home-assistant.io/)
