@@ -358,6 +358,18 @@ const liveServer = http.createServer(async (req, resp) => {
         const token = getParam('token');
         const isAuthorized = token === mytoken;
 
+        if (urlPath === "/get_radio_list") {
+            if (isAuthorized) {
+                const currentData = getRadioData();
+                resp.writeHead(200, { 'Content-Type': 'application/json' });
+                resp.end(JSON.stringify(currentData));
+            } else {
+                resp.statusCode = 403;
+                resp.end("Forbidden");
+            }
+            return;
+        }
+
         if (urlPath === "/get_players") {
             if (isAuthorized) {
                 if (!isLocal) {
